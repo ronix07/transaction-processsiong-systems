@@ -1,0 +1,12 @@
+.git
+.gitignore
+__pycache__/
+*.pyc
+node_modules/
+.venv/
+venv/
+*.mp4
+*.pptx
+*.png
+*.pdf
+README.md

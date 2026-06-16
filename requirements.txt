@@ -1,0 +1,12 @@
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+python-multipart==0.0.17
+sqlalchemy==2.0.36
+alembic==1.14.0
+psycopg2-binary==2.9.10
+celery==5.4.0
+redis==5.2.0
+pandas==2.2.3
+google-generativeai==0.8.3
+pydantic==2.10.2
+pydantic-settings==2.6.1
