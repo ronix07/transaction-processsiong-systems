@@ -1,4 +1,5 @@
 """The async processing pipeline. One Celery task runs all five steps in order."""
+import logging
 from collections import defaultdict
 from datetime import datetime, timezone
 
@@ -8,6 +9,8 @@ from app.services import llm
 from app.services.anomaly import detect_anomalies
 from app.services.cleaner import clean_csv
 from app.worker.celery_app import celery_app
+
+log = logging.getLogger(__name__)
 
 
 def _final_category(row: dict) -> str:
@@ -43,14 +46,17 @@ def process_job(job_id: str, csv_text: str) -> None:
             if r.get("category") == "Uncategorised"
         ]
         if to_classify:
+            log.info("LLM step c: classifying %d uncategorised rows in 1 batched call (model=%s)", len(to_classify), llm.MODEL_NAME)
             try:
                 mapping, raw = llm.classify_categories(to_classify)
                 for i, r in enumerate(rows):
                     if i in mapping:
                         r["llm_category"] = mapping[i]
                         r["llm_raw_response"] = raw
-            except llm.LLMError:
+                log.info("LLM step c: classified %d rows -> %s", len(mapping), dict(list(mapping.items())[:5]))
+            except llm.LLMError as e:
                 # Mark the batch as failed, keep going (do not fail the job).
+                log.warning("LLM step c FAILED after retries (%s) -> marking batch llm_failed, job continues", e)
                 for item in to_classify:
                     rows[item["id"]]["llm_failed"] = True
 
@@ -104,11 +110,14 @@ def process_job(job_id: str, csv_text: str) -> None:
             "anomaly_count": anomaly_count,
             "category_breakdown": {k: round(v, 2) for k, v in category_spend.items()},
         }
+        log.info("LLM step d: generating narrative summary in 1 call (model=%s)", llm.MODEL_NAME)
         try:
             narrative_out = llm.generate_narrative(stats)
             narrative = narrative_out["narrative"]
             risk_level = narrative_out["risk_level"]
-        except llm.LLMError:
+            log.info("LLM step d: narrative ok, risk_level=%s", risk_level)
+        except llm.LLMError as e:
+            log.warning("LLM step d FAILED after retries (%s) -> fallback narrative, job continues", e)
             narrative = "LLM narrative unavailable (llm_failed)."
             risk_level = "high" if anomaly_count > 5 else "medium"
 

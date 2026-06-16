@@ -22,7 +22,7 @@ CATEGORIES = [
     "Other",
 ]
 
-MODEL_NAME = "gemini-flash-latest"
+MODEL_NAME = "gemini-2.5-flash"
 MAX_RETRIES = 3
 
 
