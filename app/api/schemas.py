@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict
 class JobListItem(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: int
+    id: str
     filename: str
     status: str
     row_count_raw: int
@@ -27,7 +27,7 @@ class SummaryOut(BaseModel):
 class JobStatusOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: int
+    id: str
     status: str
     filename: str
     row_count_raw: int
@@ -54,7 +54,7 @@ class TransactionOut(BaseModel):
 
 
 class ResultsOut(BaseModel):
-    job_id: int
+    job_id: str
     status: str
     transactions: list[TransactionOut]
     anomalies: list[TransactionOut]

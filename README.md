@@ -1,7 +1,7 @@
 # AI-Powered Transaction Processing Pipeline
 
 A backend that ingests a CSV of raw financial transactions, processes it
-asynchronously through a job queue, uses an LLM (Gemini 1.5 Flash) to classify
+asynchronously through a job queue, uses an LLM (Gemini Flash) to classify
 transactions and produce a narrative summary, and exposes the results through a
 polling API.
 
@@ -10,7 +10,7 @@ polling API.
 - **API**: FastAPI
 - **Database**: PostgreSQL
 - **Job Queue**: Celery + Redis
-- **LLM**: Google Gemini 1.5 Flash (free tier)
+- **LLM**: Google Gemini Flash (free tier, `gemini-2.0-flash`)
 - **Containerisation**: Docker + Docker Compose
 
 ## Architecture
@@ -18,7 +18,7 @@ polling API.
 ```
 Client ──POST /jobs/upload──> FastAPI ──enqueue──> Redis ──dequeue──> Celery Worker ──> PostgreSQL
    ^                             |                                          |
-   └────GET /status, /results───┘                                   Gemini 1.5 Flash
+   └────GET /status, /results───┘                                   Gemini Flash
                                                                   (batched LLM calls)
 ```
 

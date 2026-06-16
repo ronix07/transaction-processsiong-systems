@@ -1,4 +1,4 @@
-"""Steps c) + d) LLM classification and narrative summary via Gemini 1.5 Flash.
+"""Steps c) + d) LLM classification and narrative summary via Gemini Flash.
 
 Calls are batched (one call for all uncategorised rows, one call for the
 narrative). Retry up to 3 times with exponential backoff. On final failure
@@ -22,7 +22,7 @@ CATEGORIES = [
     "Other",
 ]
 
-MODEL_NAME = "gemini-1.5-flash"
+MODEL_NAME = "gemini-flash-latest"
 MAX_RETRIES = 3
 
 

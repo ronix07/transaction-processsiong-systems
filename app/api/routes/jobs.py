@@ -36,7 +36,7 @@ def upload(file: UploadFile = File(...), db: Session = Depends(get_db)):
     db.refresh(job)
 
     process_job.delay(job.id, csv_text)
-    return {"job_id": job.id, "status": job.status}
+    return {"job_id": job.id, "status": job.status, "message": "Job enqueued"}
 
 
 @router.get("", response_model=list[JobListItem])
@@ -51,7 +51,7 @@ def list_jobs(
 
 
 @router.get("/{job_id}/status", response_model=JobStatusOut)
-def job_status(job_id: int, db: Session = Depends(get_db)):
+def job_status(job_id: str, db: Session = Depends(get_db)):
     job = db.get(Job, job_id)
     if job is None:
         raise HTTPException(404, "Job not found")
@@ -59,7 +59,7 @@ def job_status(job_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/{job_id}/results", response_model=ResultsOut)
-def job_results(job_id: int, db: Session = Depends(get_db)):
+def job_results(job_id: str, db: Session = Depends(get_db)):
     job = db.get(Job, job_id)
     if job is None:
         raise HTTPException(404, "Job not found")

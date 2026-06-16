@@ -16,7 +16,7 @@ def _final_category(row: dict) -> str:
 
 
 @celery_app.task(name="process_job")
-def process_job(job_id: int, csv_text: str) -> None:
+def process_job(job_id: str, csv_text: str) -> None:
     db = SessionLocal()
     job = db.get(Job, job_id)
     if job is None:

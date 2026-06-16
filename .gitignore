@@ -10,3 +10,6 @@ build/
 .venv/
 venv/
 *.mp4
+
+.claude/
+*.pdf

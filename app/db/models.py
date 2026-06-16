@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timezone
 
 from sqlalchemy import (
@@ -19,10 +20,14 @@ def _now():
     return datetime.now(timezone.utc)
 
 
+def _uuid():
+    return str(uuid.uuid4())
+
+
 class Job(Base):
     __tablename__ = "jobs"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
     filename: Mapped[str] = mapped_column(String(255))
     status: Mapped[str] = mapped_column(String(20), default="pending", index=True)
     row_count_raw: Mapped[int] = mapped_column(Integer, default=0)
@@ -43,7 +48,7 @@ class Transaction(Base):
     __tablename__ = "transactions"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    job_id: Mapped[int] = mapped_column(ForeignKey("jobs.id"), index=True)
+    job_id: Mapped[str] = mapped_column(ForeignKey("jobs.id"), index=True)
     txn_id: Mapped[str | None] = mapped_column(String(50), nullable=True)
     date: Mapped[str | None] = mapped_column(String(10), nullable=True)
     merchant: Mapped[str | None] = mapped_column(String(255), nullable=True)
@@ -67,7 +72,7 @@ class JobSummary(Base):
     __tablename__ = "job_summaries"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    job_id: Mapped[int] = mapped_column(ForeignKey("jobs.id"), index=True)
+    job_id: Mapped[str] = mapped_column(ForeignKey("jobs.id"), index=True)
     total_spend_inr: Mapped[float] = mapped_column(Float, default=0.0)
     total_spend_usd: Mapped[float] = mapped_column(Float, default=0.0)
     top_merchants: Mapped[list] = mapped_column(JSON, default=list)

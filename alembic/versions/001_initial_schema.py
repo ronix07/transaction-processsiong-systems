@@ -18,7 +18,7 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.create_table(
         "jobs",
-        sa.Column("id", sa.Integer(), primary_key=True),
+        sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("filename", sa.String(255), nullable=False),
         sa.Column("status", sa.String(20), nullable=False),
         sa.Column("row_count_raw", sa.Integer(), nullable=False),
@@ -32,7 +32,7 @@ def upgrade() -> None:
     op.create_table(
         "transactions",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("job_id", sa.Integer(), sa.ForeignKey("jobs.id"), nullable=False),
+        sa.Column("job_id", sa.String(36), sa.ForeignKey("jobs.id"), nullable=False),
         sa.Column("txn_id", sa.String(50), nullable=True),
         sa.Column("date", sa.String(10), nullable=True),
         sa.Column("merchant", sa.String(255), nullable=True),
@@ -53,7 +53,7 @@ def upgrade() -> None:
     op.create_table(
         "job_summaries",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("job_id", sa.Integer(), sa.ForeignKey("jobs.id"), nullable=False),
+        sa.Column("job_id", sa.String(36), sa.ForeignKey("jobs.id"), nullable=False),
         sa.Column("total_spend_inr", sa.Float(), nullable=False),
         sa.Column("total_spend_usd", sa.Float(), nullable=False),
         sa.Column("top_merchants", sa.JSON(), nullable=False),
